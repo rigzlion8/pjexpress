@@ -1,20 +1,34 @@
-//@desc Get all users
-//@route Get /api/users
-//@access public
-
-const getUsers = (req, res) => {
-     res.status(200).json({ message: "Getting there with a get"});
-};
-
-//@desc create new users
-//@route POST /api/users
-//@access public
 const express = require('express');
 const mysql = require('mysql');
 
 const app = express();
 
 const { con } = require('../db.js');
+
+const Users = require('../models/userModel.js');
+
+//@desc Get all users
+//@route Get /api/users
+//@access public
+
+//const getUsers = (req, res) => {
+//     const finduser = Users.find();
+//    res.status(200).json( {message: "Getting there with a get"});
+//    res.status(200).json(Users);
+//};
+const getUsers = (req, res) => {
+    con.connect(function(err) {
+    con.query(`SELECT * FROM identity.users`, function(err, result, fields) {
+            if (err) res.send(err);
+            if (result) res.send(result);
+           });
+    });
+};
+
+//@desc create new users
+//@route POST /api/users
+//@access public
+
 const createUser = (req, res) => {
    console.log('The request body is:', req.body);
 	const {name, username, email, age, password} = req.body;
@@ -27,7 +41,9 @@ const createUser = (req, res) => {
       console.log('Request received');
       con.connect(function(err) { 
         // con.query('USE identity;');
-          con.query(`INSERT INTO identity.users (name, username, email, age, password) VALUES ('${req.query.name}','${req.query.username}', '${req.query.email}', '${req.query.age}', '${req.query.password}')`, function(err, result, fields) {
+        //  con.query(`INSERT INTO identity.users (name, username, email, age, password) VALUES ('${req.query.name}','${req.query.username}', '${req.query.email}', '${req.query.age}', '${req.query.password}')`, function(err, result, fields) {
+	con.query(`INSERT INTO identity.users (name, username, email, age, password) VALUES ('${req.body.name}','${req.body.username}', '${req.body.email}', '${req
+		.body.age}', '${req.body.password}')`, function(err, result, fields) {
      if (err) res.send(err);
      if (result) res.send({name: req.query.name, username: req.query.username, email: req.query.email, age: req.query.age, password: req.query.password});
      if (fields) console.log(fields);
@@ -36,10 +52,8 @@ const createUser = (req, res) => {
      } else {
           console.log('Missing a parameter');
      }
-	res.status(201).json({ message: "user created"});
+res.status(201).json({ message: "user created"});
 };
-//   res.status(201).json({ message: "user created"});
-//};
 
 //@desc Get single user
 //@route POST /api/users/:id

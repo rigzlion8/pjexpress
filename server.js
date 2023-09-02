@@ -1,14 +1,24 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const errorHandler = require('./middleware/errorHandler');
 const mysql = require('mysql');
 const dotenv = require('dotenv').config();
 
 const app = express();
 
-//const { con } = require('./db.js');
 
+
+//const { con } = require('./db.js');
+//app.use(bodyParser.json());
+app.use(
+//	bodyParser.urlencoded({
+	express.urlencoded({
+	  extended: true,
+	}),
+);
 
 app.use(express.json());
+//app.use(urlencoded());
 app.use('/api/users', require('./routes/userRoutes'));
 app.use(errorHandler);
 
